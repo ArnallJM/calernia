@@ -122,17 +122,23 @@ class MusicPlayer:
             self.history.pop()
         self.history.insert(0, song)
 
-    def print_current_info(self):
-        title = self.current_media.get_meta(vlc.Meta.Title)
-        # length = self.player.get_length()/1000
-        # length_string = f"({length//60}:{length%60})"
-        print("")
-        print("Now playing: ", title)
-        print(self.current_song.file_name)
-        print("Attributes:")
-        print(self.storage.attribute_names)
-        print("Current:")
-        print(self.current_song.attributes)
+    def print_current_info(self):  # TODO this is a botch job
+        if self.current_media is None:
+            print("")
+            print("Not currently playing anything")
+            print("Attributes:")
+            print(self.storage.attribute_names)
+        else:
+            title = self.current_media.get_meta(vlc.Meta.Title)
+            # length = self.player.get_length()/1000
+            # length_string = f"({length//60}:{length%60})"
+            print("")
+            print("Now playing: ", title)
+            print(self.current_song.file_name)
+            print("Attributes:")
+            print(self.storage.attribute_names)
+            print("Current:")
+            print(self.current_song.attributes)
         print("Target:")
         print(list(self.storage.target))
         print("Strength:")
@@ -171,6 +177,7 @@ class CommandLine:
             else:
                 continue
             if first == "help" or first == "h":
+                print("")
                 print("Possible commands:")
                 print("exit/quit/q")
                 print("pause")
