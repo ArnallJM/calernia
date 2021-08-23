@@ -59,6 +59,9 @@ class SongStorage:
     def update(self):
         for folder in self.library_directories:
             self._update_library(folder)
+        self.update_costs()
+
+    def update_costs(self):
         for song in self.song_list:
             song.update_cost(self.target, self.strength)
 
@@ -82,6 +85,7 @@ class SongStorage:
             directory.remove_attribute(index)
         self.target = np.delete(self.target, index)
         self.strength = np.delete(self.strength, index)
+        self.update_costs()
         # self.save()
 
     def change_target(self, target, strength):
@@ -94,12 +98,11 @@ class SongStorage:
             raise ValueError("target and strength must be of appropriate length")
         if any(target > Song.ATTRIBUTE_RANGE[1]) or any(target < Song.ATTRIBUTE_RANGE[0]):
             raise ValueError("target must be in expected range")
-        if any(strength > 3) or any(strength < 1):
+        if any(strength > 3) or any(strength < 0):
             raise ValueError("strength must be in expected range")
         self.target = target
         self.strength = strength
-        for song in self.song_list:
-            song.update_cost(target, strength)
+        self.update_costs()
         #     result.append(song.probability)
         # return result
 

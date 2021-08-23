@@ -34,6 +34,7 @@ class MusicPlayer:
 
     def load_storage(self, location=SongStorage.DEFAULT_SAVE):
         self.storage = SongStorage.load(location)
+        self.storage.update_costs()
 
     def change_target(self, target, strength):
         # Requires np.array of ints!
@@ -135,6 +136,8 @@ class MusicPlayer:
             print("")
             print("Now playing: ", title)
             print(self.current_song.file_name)
+            print(f"Cost: {self.current_song.cost}")
+            print(f"Probability: {self.current_song.probability}")
             print("Attributes:")
             print(self.storage.attribute_names)
             print("Current:")
@@ -143,6 +146,8 @@ class MusicPlayer:
         print(list(self.storage.target))
         print("Strength:")
         print(list(self.storage.strength))
+        print("Playable songs:")
+        print(sum(self.storage.probabilities>0))
         # print("")
 
 
@@ -253,7 +258,7 @@ class CommandLine:
                 elif inputs[1] == "previous" or inputs[1] == "p":
                     if len(self.player.history) <= 1:
                         print("No previous songs")
-                    song = self.player.history[-2]
+                    song = self.player.history[1]
                     print("Setting attributes for ", song.file_name)
                     print("0: unset, 1: low, 2: moderate, 3: high")
                     print(self.player.storage.attribute_names)
@@ -266,6 +271,7 @@ class CommandLine:
                         print("Incorrect number of attributes or attribute outside of allowed range")
                 elif inputs[1] == "target" or inputs[1] == "t":
                     print("0: unset, 1: low, 2: moderate, 3: high")
+                    print(self.player.storage.attribute_names)
                     print("Current target:", self.player.storage.target)
                     new_string = input("New target:\n")
                     try:
@@ -274,7 +280,8 @@ class CommandLine:
                     except ValueError:
                         print("Incorrect number of attributes or attribute outside of allowed range")
                 elif inputs[1] == "strength" or inputs[1] == "s":
-                    print("1: ignore, 2: close, 3: perfect")
+                    print("0: ignore, 1: approximate, 2: close, 3: perfect")
+                    print(self.player.storage.attribute_names)
                     print("Current strength:", self.player.storage.strength)
                     new_string = input("New strength:\n")
                     try:

@@ -63,7 +63,8 @@ class Song(File):
     # play_count_scalar = 10
     skipped_filetypes = {}
     ATTRIBUTE_RANGE = (0, 3)
-    COST_PENALTY = 2
+    MATCH_SCALE = 3
+    HARD_MATCH_SCALE = 7
 
     # def _probability_fn(self, weights):
     #     probability = 1  # to do? decide whether I want a default nonzero probability
@@ -86,7 +87,7 @@ class Song(File):
     def probability(self):
         if self.cost == -1:
             return 0
-        return 1/(1+self.cost*self.COST_PENALTY)
+        return 1/(1+self.cost)
 
     # def probability(self, weights, include=None):
     #     if include is None:
@@ -111,7 +112,7 @@ class Song(File):
             raise ValueError("Strength must be same length as Attributes")
         cost = 0
         for i in range(len(self.attributes)):
-            if target[i] == 0 and strength[i] != 1:
+            if target[i] == 0 and strength[i] != 0:
                 # Want unset attribute
                 if self.attributes[i] == 0:
                     continue
@@ -119,14 +120,26 @@ class Song(File):
                     self.cost = -1
                     return self.cost
             if self.attributes[i] == 0:
-                # Attribute unset
-                continue
-            if strength[i] == 1:
+                if target[i] != 0:
+                    # Attribute unset
+                    self.cost = -1
+                    return self.cost
+                else:
+                    # Attribute unset but no-one cares
+                    pass
+            if strength[i] == 0:
                 # No impact
                 pass
-            elif strength[i] == 2:
+            elif strength[i] == 1:
                 # close match
-                cost += (self.attributes[i]-target[i])**2
+                cost += self.MATCH_SCALE*(self.attributes[i]-target[i])**4
+            elif strength[i] == 2:
+                # very close match
+                diff = abs(self.attributes[i]-target[i])
+                if diff > 1:
+                    self.cost = -1
+                    return self.cost
+                cost += self.HARD_MATCH_SCALE*diff
             elif strength[i] == 3:
                 # exact match
                 if self.attributes[i] != target[i]:
