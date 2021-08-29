@@ -11,6 +11,7 @@ class MusicPlayer:
     def __init__(self):
         # self.startwindow()
         self.storage = None
+        self.gui = None
 
         self.current_song = None
         self.current_media = None
@@ -79,6 +80,8 @@ class MusicPlayer:
         self._select_next()
         self.event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, self.when_track_changed)
         self.print_current_info()
+        if self.gui is not None:
+            self.gui.when_track_changed()
 
     def when_track_changed(self, _):
         # print("doot")
@@ -98,8 +101,11 @@ class MusicPlayer:
         # print("noot")
         self.player.play()
         self.print_current_info()
+        if self.gui is not None:
+            self.gui.when_track_changed()
 
     def play_pause(self):
+        print("Play/pause!")
         if self.current_song is None:
             self._first_start()
         else:
@@ -334,84 +340,5 @@ class CommandLine:
                 print("Command not recognised")
             # if first != "skip":
             #     print("")
-
-
-class GUI:
-    def __init__(self, root):
-        self.player = MusicPlayer()
-        root.title("Calernia")
-        self.mainframe = ttk.Frame(root, padding="3 3 12 12")
-        self.mainframe.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
-        self.mainframe.columnconfigure(0, weight=1)
-        self.mainframe.rowconfigure(0, weight=1)
-        root.columnconfigure(0, weight=1)
-        root.rowconfigure(0, weight=1)
-
-        self.control_column = ttk.Frame(self.mainframe)
-        self.control_column.grid(column=0, row=0, sticky='nwes')
-        ttk.Label(self.control_column, text='doot').grid(column=0, row=0, sticky='nsew')
-
-        self.attribute_frame = ttk.Frame(self.mainframe)
-        self.attribute_frame.grid(column=1, row=0, sticky='nwes')
-
-        current_spinbox, target_spinbox, strength_spinbox, name_label = self.attribute_column()
-
-        # for child in self.mainframe.winfo_children():
-            # child
-            # child['anchor'] = tk.CENTER
-            # child['justify'] = 'center'
-            # print(type(child))
-            # print(child.configure('padding'))
-
-    def attribute_column(self, index=0):
-        # current_attribute = tk.IntVar()
-        # target_attribute = tk.IntVar()
-        # strength = tk.IntVar()
-        # name = tk.StringVar()
-
-        column = ttk.Frame(self.attribute_frame)
-        column['borderwidth'] = 2
-        column.grid(column=index, row=0, sticky='nwes')
-
-        current_spinbox = ttk.Spinbox(column, from_=0, to=3)
-        target_spinbox = ttk.Spinbox(column, from_=0, to=3)
-        strength_spinbox = ttk.Spinbox(column, from_=0, to=3)
-        name_label = ttk.Label(column, text="unset_name")
-
-        current_spinbox.grid(column=0, row=0, sticky='nesw')
-        ttk.Separator(column, orient='horizontal').grid(column=0, row=1, sticky='ew')
-        target_spinbox.grid(column=0, row=2, sticky='nesw')
-        strength_spinbox.grid(column=0, row=3, sticky='nesw')
-        name_label.grid(column=0, row=4, sticky='nesw')
-
-        return current_spinbox, target_spinbox, strength_spinbox, name_label
-
-
-
-
-
-
-if __name__ == '__main__':
-    # doot = CommandLine()
-    # doot.main_loop()
-
-    root = tk.Tk()
-    gooy = GUI(root)
-
-
-    def print_hierarchy(w, depth=0):
-        print(
-            '  ' * depth + w.winfo_class() + ' w=' + str(w.winfo_width()) + ' h=' + str(w.winfo_height()) + ' x=' + str(
-                w.winfo_x()) + ' y=' + str(w.winfo_y()))
-        for i in w.winfo_children():
-            print_hierarchy(i, depth + 1)
-
-
-    print_hierarchy(root)
-    root.mainloop()
-
-    # /media/arnalljm/windows/Users/arnal/Music/Nintendo/Disc 1/
-
-
 
 
