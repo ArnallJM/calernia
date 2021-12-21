@@ -1,0 +1,8 @@
+X volume slider - saved into songstorage
+modifying attributes page
+pretty gui
+keyboard shortcuts? - see media key integration
+X media key integration - needs player to be in focus, unless I play around with multithreading
+rewrite storage to use hidden files in folders?
+library merging?
+add furi soundtrack

@@ -36,6 +36,8 @@ class MusicPlayer:
     def load_storage(self, location=SongStorage.DEFAULT_SAVE):
         self.storage = SongStorage.load(location)
         self.storage.update_costs()
+        # if "volume" not in self.storage.__dict__.keys():
+        #     self.storage.volume = 100.
 
     def change_target(self, target, strength):
         # Requires np.array of ints!
@@ -98,6 +100,7 @@ class MusicPlayer:
         # print("joot")
         # print(self.player.will_play())
         self.player.set_media(self.current_media)
+        self.player.audio_set_volume(self.storage.volume)
         # print("noot")
         self.player.play()
         self.print_current_info()
@@ -123,6 +126,25 @@ class MusicPlayer:
 
     def skip(self):
         self.player.set_position(1.)
+
+    def previous(self):
+        if len(self.history) <= 1:
+            return -1
+        self.player.stop()
+        self.next_song = self.current_song
+        self.next_media = self.current_media
+        self.history.pop(0)
+        self.current_song = self.history[0]
+        self.current_media = self._create_media(self.current_song)
+        self.player = self.instance.media_player_new()
+        self.event_manager = self.player.event_manager()
+        self.event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, self.when_track_changed)
+        self.player.set_media(self.current_media)
+        # print("noot")
+        self.player.play()
+        self.print_current_info()
+        if self.gui is not None:
+            self.gui.when_track_changed()
 
     def _add_to_history(self, song):
         if len(self.history) == self.max_history_size:

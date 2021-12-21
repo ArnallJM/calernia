@@ -18,6 +18,7 @@ class SongStorage:
         self.target = np.zeros(0, int)
         self.strength = np.zeros(0, int)
         self.save_name = self.DEFAULT_SAVE
+        self.volume = 100
         # self.current_song = None
         # self.next_song = None
         pass
